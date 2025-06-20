@@ -1,0 +1,104 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block title %}Manager Dashboard{% endblock title %}
+{% block tasks %}
+    {% comment %} task table {% endcomment %}
+            <div class="bg-white rounded-x shadow-md rounded-xl">
+                <div class="grid grid-cols-4 text-sm font-semibold text-gray-500 p-5 border-b border-gray-100">
+                    <div>TASK TITLE</div>
+                    <div>PRIORITY</div>
+                    <div>TEAM</div>
+                    <div>CREATED AT</div>
+                </div>
+
+                {% comment %} task items {% endcomment %}
+                <div class="divide-y divide-gray-100">
+                    {% comment %} tast-1 {% endcomment %}
+                    <div class="grid grid-cols-4 p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="h-2 w-2 bg-green-500 rounded-full"></div>
+                            <div><span class="font-semibold">Test Low Task</span></div>
+                        </div>
+
+                        <div>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Low</span>
+                        </div>
+
+                        <div class="flex -space-x-2">
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                CA</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                JS</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                B</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">9 month ago</span>
+                        </div>
+                    </div>
+
+                    {% comment %} task-2 {% endcomment %}
+                    <div class="grid grid-cols-4 p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="h-2 w-2 bg-yellow-500 rounded-full"></div>
+                            <div><span class="font-semibold">Test Task</span></div>
+                        </div>
+
+                        <div>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">Normal</span>
+                        </div>
+
+                        <div class="flex -space-x-2">
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                AJ</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                EV</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                B</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">9 month ago</span>
+                        </div>
+                    </div>
+
+                    {% comment %} tast-3 {% endcomment %}
+                    <div class="grid grid-cols-4 p-4">
+                        <div class="flex items-center gap-2">
+                            <div class="h-2 w-2 bg-orange-500 rounded-full"></div>
+                            <div><span class="font-semibold">Test Task</span></div>
+                        </div>
+
+                        <div>
+                            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">High</span>
+                        </div>
+
+                        <div class="flex -space-x-2">
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                CA</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                JS</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                AJ</div>
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                                B</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">10 month ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock tasks %}
