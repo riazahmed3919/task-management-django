@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from tasks.forms import TaskForm, TaskModelForm
-from tasks.models import Employee, Task, TaskDetails
+from tasks.models import Employee, Task, TaskDetails, Project
 from datetime import date
 from django.db.models import Q
 
@@ -40,13 +40,12 @@ def create_task(request):
     return render(request, "task_form.html", context)
 
 def view_task(request):
-    """ show the task that contain the word '___' """
-    # tasks = Task.objects.filter(title__icontains='ie')
+    """ select_related query (OneToOneField, ForeignKeyField) """
+    # tasks = Task.objects.select_related('details').all()
+    # tasks = Task.objects.select_related('project').all()
 
-    """ show the task that contain the word '___' and status '___' """
-    # tasks = Task.objects.filter(title__icontains='ie', status='PENDING')
-
-    """ show the task that status is PENDING or IN_PROGRESS """
-    tasks = Task.objects.filter(Q(status='PENDING') | Q(status='IN_PROGRESS'))
+    """ prefetch_related query (reverse ForeignKey, ManyToManyField) """
+    # tasks = Project.objects.prefetch_related('task_set').all()
+    tasks = Task.objects.prefetch_related('assigned_to').all()
 
     return render(request, "show_task.html", {'tasks': tasks})

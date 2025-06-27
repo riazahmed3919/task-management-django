@@ -7,14 +7,16 @@
 </head>
 <body>
     <div>
-        <ul>
+        <ol>
             {% for task in tasks %}
                 <li>
-                    <h4>{{task.title}}</h4>
-                    <span>{{task.status}}</span>
+                    <p>{{task.title}}</p>
+                    {% for emp in task.assigned_to.all %}
+                        <p>{{emp.name}}</p>
+                    {% endfor %}
                 </li>
             {% endfor %}
-        </ul>
+        </ol>
     </div>
 </body>
 </html>
