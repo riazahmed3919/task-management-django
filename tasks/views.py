@@ -32,24 +32,19 @@ def create_task(request):
         if form.is_valid():
             """ For TaskModelForm """
             form.save()
-
             return render(request, 'task_form.html', {'form': form, 'message': "Task Added Successfully."})
-
-            """ For TaskForm """
-            # data = form.cleaned_data
-            # title = data.get('title')
-            # description = data.get('description')
-            # due_date = data.get('due_date')
-            # assigned_to = data.get('assigned_to')
-
-            # task = Task.objects.create(title=title, description=description, due_date=due_date)
-            
-            # #assigned employees to task
-            # for emp_id in assigned_to:
-            #     employee = Employee.objects.get(id=emp_id)
-            #     task.assigned_to.add(employee)
-
-            # return HttpResponse("Task added successfully.")
 
     context = {'form': form}
     return render(request, "task_form.html", context)
+
+def view_task(request):
+    # retrieve all data from Task model
+    tasks = Task.objects.all()
+
+    # retrieve a specific task
+    task_3 = Task.objects.get(id = 3)
+
+    # fetch the first task only
+    first_task = Task.objects.first()
+
+    return render(request, "show_task.html", {'tasks': tasks, 'task_3': task_3, 'first_task': first_task})
