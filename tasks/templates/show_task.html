@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>django-ORM</title>
 </head>
 <body>
     <div>
-        <ol>
+        {% comment %} <ol>
             {% for task in tasks %}
                 <li>
                     <p>{{task.title}}</p>
@@ -16,7 +16,10 @@
                     {% endfor %}
                 </li>
             {% endfor %}
-        </ol>
+        </ol> {% endcomment %}
+        <p>
+            {{task_count}}
+        </p>
     </div>
 </body>
 </html>
