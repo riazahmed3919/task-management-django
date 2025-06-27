@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from tasks.forms import TaskForm, TaskModelForm
-from tasks.models import Employee, Task
+from tasks.models import Employee, Task, TaskDetails
+from datetime import date
 
 # Create your views here.
 
@@ -38,13 +39,13 @@ def create_task(request):
     return render(request, "task_form.html", context)
 
 def view_task(request):
-    # retrieve all data from Task model
-    tasks = Task.objects.all()
+    """ show the tasks those are completed """
+    # tasks = Task.objects.filter(status='COMPLETED')
 
-    # retrieve a specific task
-    task_3 = Task.objects.get(id = 3)
+    """ show the tasks whose due date is today """
+    # tasks = Task.objects.filter(due_date=date.today())
 
-    # fetch the first task only
-    first_task = Task.objects.first()
+    """ show the tasks whose priority is not Low """
+    tasks = TaskDetails.objects.exclude(priority='M')
 
-    return render(request, "show_task.html", {'tasks': tasks, 'task_3': task_3, 'first_task': first_task})
+    return render(request, "show_task.html", {'tasks': tasks})
