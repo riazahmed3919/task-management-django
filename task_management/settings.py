@@ -1,4 +1,4 @@
-import dj_database_url
+# import dj_database_url
 
 """
 Django settings for task_management project.
@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-c3%)c^^42csgk_tq4inn3z%nr)w7cuohp+e#ptlf^4c1g23a6_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'http://127.0.0.1:8000']
+# ALLOWED_HOSTS = ['*']
+# CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'http://127.0.0.1:8000']
 
 
 # Application definition
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tasks',
     'users',
-    "debug_toolbar",
+    'debug_toolbar',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -94,25 +95,25 @@ WSGI_APPLICATION = 'task_management.wsgi.application'
 # }
 
 # Database documentation https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://task_manager_db_lvb2_user:6eoXD53btF2burrdwQubC1WDLp9A0XO9@dpg-d1go74umcj7s73d22ajg-a.oregon-postgres.render.com/task_manager_db_lvb2',
-        conn_max_age=600
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgresql://task_manager_db_lvb2_user:6eoXD53btF2burrdwQubC1WDLp9A0XO9@dpg-d1go74umcj7s73d22ajg-a.oregon-postgres.render.com/task_manager_db_lvb2',
+#         conn_max_age=600
+#     )
+# }
 
 # for postgres
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'task_management',
-#         'USER': 'postgres',
-#         'PASSWORD': '#q99ppyqopSql',
-#         'HOST': 'localhost',
-#         'PORT': '5432'
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'task_management',
+        'USER': 'postgres',
+        'PASSWORD': '#q99ppyqopSql',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

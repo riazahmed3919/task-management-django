@@ -14,6 +14,10 @@ class TaskForm(forms.Form):
         self.fields['assigned_to'].choices = [(emp.id, emp.name) for emp in employees]
 
 class StyledFormMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.apply_styled_widget()
+
     default_classes = "border-2 border-gray-300 w-full p-3 rounded-lg shodow-md focus:outlin-none focus:border-rose-500 focus:ring-rose-500"
 
     def apply_styled_widget(self):
@@ -53,16 +57,7 @@ class TaskModelForm(StyledFormMixin, forms.ModelForm):
             'assigned_to': forms.CheckboxSelectMultiple
         }
 
-    """ Widget using Mixin """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.apply_styled_widget()
-
 class TaskDetailsModelForm(StyledFormMixin ,forms.ModelForm):
     class Meta:
         model = TaskDetails
         fields = ['priority', 'notes']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.apply_styled_widget()
