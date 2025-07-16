@@ -1,17 +1,22 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home | Taskify</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body>
-    <h1>Welcome to HOME</h1>
+<body class="w-2/3 mx-auto mt-8">
+    <h1 class="text-gray-500 text-xl mb-5">Welcome to HOME</h1>
     {% if user.is_authenticated %}
-        {{user}}
+        <p class="text-lg text-gray-600 mb-3">
+            👋 Welcome back, <span class="font-semibold text-stone-500">{{user}}</span>
+        </p>
         <form action="{% url 'sign-out' %}" method="POST">
             {% csrf_token %}
-            <button type="submit">Sign Out</button>
+            <button type="submit" class="mt-5 px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg shadow-md">Sign Out</button>
         </form>
     {% else %}
         Annonymous!

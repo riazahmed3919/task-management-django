@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import HttpResponse
-from tasks.forms import TaskForm, TaskModelForm, TaskDetailsModelForm
-from tasks.models import Employee, Task, TaskDetails, Project
-from datetime import date
+from tasks.forms import TaskModelForm, TaskDetailsModelForm
+from tasks.models import Task
 from django.db.models import *
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 
 # Create your views here.
+def is_manager(user):
+    return user.groups.filter(name='Manager').exists()
 
+def is_employe(user):
+    return user.groups.filter(name='Employee').exists()
+
+@user_passes_test(is_manager, login_url='no-permission')
 def manager_dashboard(request):
     # total_task = tasks.count()
     # completed_task = Task.objects.filter(status='COMPLETED').count()
@@ -42,21 +47,12 @@ def manager_dashboard(request):
     }
     return render(request, "dashboard/manager_dashboard.html", context)
 
-def user_dashboard(request):
+@user_passes_test(is_employe, login_url='no-permission')
+def employee_dashboard(request):
     return render(request, "dashboard/user_dashboard.html")
 
-def test(request):
-    names = ['Rahim', 'Karim', 'Jabbar', 'Sattar', 'Mr. Alu']
-    count = 0
-    for name in names:
-        count += 1
-    context = {
-        'names': names,
-        'age': [10, 20, 30, 40, 50],
-        'count': count
-    }
-    return render(request, "test.html", context)
-
+@login_required
+@permission_required('tasks.add_task', login_url='no-permission')
 def create_task(request):
     # employees = Employee.objects.all()
     task_form = TaskModelForm()    #for GET
@@ -79,6 +75,8 @@ def create_task(request):
     context = {'task_form': task_form, 'task_details_form': task_details_form}
     return render(request, "task_form.html", context)
 
+@login_required
+@permission_required('tasks.change_task', login_url='no-permission')
 def update_task(request, id):
     task = Task.objects.get(id=id)
     task_form = TaskModelForm(instance=task)
@@ -103,6 +101,8 @@ def update_task(request, id):
     context = {'task_form': task_form, 'task_details_form': task_details_form}
     return render(request, "task_form.html", context)
 
+@login_required
+@permission_required('tasks.delete_task', login_url='no-permission')
 def delete_task(request, id):
     if request.method == 'POST':
         task = Task.objects.get(id=id)
@@ -113,6 +113,8 @@ def delete_task(request, id):
         messages.error(request, 'Something went wrong!')
         return redirect('manager-dashboard')
 
+@login_required
+@permission_required('tasks.view_task', login_url='no-permission')
 def view_task(request):
     task_count = Task.objects.aggregate(num_task=Count('id'))
 
