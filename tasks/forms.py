@@ -6,7 +6,7 @@ class TaskForm(forms.Form):
     title = forms.CharField(max_length=250, label='Task Title')
     description = forms.CharField(widget=forms.Textarea, label='Task Description')
     due_date = forms.DateField(widget=forms.SelectDateWidget, label='Due Date')
-    assigned_to = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=[])
+    assigned_to = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=[], label='Assigned To')
 
     def __init__(self, *args, **kwargs):
         employees = kwargs.pop("employees", [])
@@ -60,4 +60,4 @@ class TaskModelForm(StyledFormMixin, forms.ModelForm):
 class TaskDetailsModelForm(StyledFormMixin ,forms.ModelForm):
     class Meta:
         model = TaskDetails
-        fields = ['priority', 'notes']
+        fields = ['priority', 'notes', 'asset']

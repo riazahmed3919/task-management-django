@@ -3,49 +3,49 @@
 {% block title %}Manager Dashboard{% endblock title %}
 {% block tasks %}
     {% comment %} task table {% endcomment %}
-            <div class="bg-white rounded-x shadow-md rounded-xl">
-                <div class="grid grid-cols-4 text-sm font-semibold text-gray-500 p-5 border-b border-gray-100">
-                    <div>TASK TITLE</div>
-                    <div>PRIORITY</div>
-                    <div>TEAM</div>
-                    <div>CREATED AT</div>
-                </div>
+<div class="bg-white rounded-xl shadow-md mb-7">
+    <div class="grid grid-cols-4 text-sm font-semibold text-gray-500 p-5 border-b border-gray-100">
+        <div>TASK TITLE</div>
+        <div>PRIORITY</div>
+        <div>TEAM</div>
+        <div>CREATED AT</div>
+    </div>
 
-                {% comment %} task items {% endcomment %}
-                <div class="divide-y divide-gray-100">
-                    {% comment %} all task details {% endcomment %}
-                    {% for task in tasks %}
-                        <div class="grid grid-cols-4 p-4">
-                        <div class="flex items-center gap-2">
-                            <div class="h-2 w-2 bg-green-500 rounded-full"></div>
-                            <div>
-                                <span class="font-semibold"> {{task.title}} </span><br>
-                                <a href="{% url 'update-task' task.id %}" class="py-1 px-2 bg-yellow-500 rounded-lg text-xs font-semibold">Edit</a>
-                                <form action="{% url 'delete-task' task.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="py-1 px-2 bg-red-500 rounded-lg text-xs font-semibold">Delete</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div>
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm"> {{task.details.get_priority_display}} </span>
-                        </div>
-
-                        <div class="flex -space-x-2">
-                            {% for emp in task.assigned_to.all %}
-                                <div class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
-                                {{emp.name | slice:':1'}}
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <div>
-                            <span class="text-gray-500"> {{task.created_at | timesince}} ago</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-
+    {% comment %} task items {% endcomment %}
+    <div class="divide-y divide-gray-100">
+        {% comment %} all task details {% endcomment %}
+        {% for task in tasks %}
+            <div class="grid grid-cols-4 p-4">
+            <div class="flex items-center gap-2">
+                <div class="h-2 w-2 bg-green-500 rounded-full"></div>
+                <div>
+                    <a href="{% url 'task-details' task.id %}"> {{task.title}} </a><br>
+                    <a href="{% url 'update-task' task.id %}" class="py-1 px-2 bg-yellow-500 rounded-lg text-xs font-semibold">Edit</a>
+                    <form action="{% url 'delete-task' task.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="py-1 px-2 bg-red-500 rounded-lg text-xs font-semibold">Delete</button>
+                    </form>
                 </div>
             </div>
+
+            <div>
+                <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm"> {{task.details.get_priority_display}} </span>
+            </div>
+
+            <div class="flex -space-x-2">
+                {% for emp in task.assigned_to.all %}
+                    <div class="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm border-2 border-white">
+                    {{emp.first_name | slice:':1'}}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div>
+                <span class="text-gray-500"> {{task.created_at | timesince}} ago</span>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
 {% endblock tasks %}
