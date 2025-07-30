@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>django-ORM</title>
+    <title>All Task</title>
 </head>
 <body>
     <div>
-        {% comment %} <ol>
-            {% for task in tasks %}
+       <ol>
+            {% for project in projects %}
                 <li>
-                    <p>{{task.title}}</p>
-                    {% for emp in task.assigned_to.all %}
-                        <p>{{emp.name}}</p>
-                    {% endfor %}
+                    <p>{{project.name}}</p>
+                    <p>{{project.num_task}}</p>
                 </li>
             {% endfor %}
-        </ol> {% endcomment %}
-        <p>
-            {{task_count}}
-        </p>
+            </ol> 
+            {% comment %} <p>{{task_count}}</p> {% endcomment %}
     </div>
 </body>
 </html>
