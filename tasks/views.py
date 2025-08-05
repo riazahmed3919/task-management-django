@@ -244,7 +244,7 @@ class TaskDetails(DetailView):
         task.save()
         return redirect('task-details', task.id)
 
-@login_required
+@login_required # no need CBV
 def dashboard(request):
     if is_manager(request.user):
         return redirect('manager-dashboard')

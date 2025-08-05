@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.contrib.auth import login, logout
-from users.forms import CustomResgistrationForm, LoginForm, AssignRoleForm, CreateGroupForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordResetConfirmForm
+from users.forms import CustomResgistrationForm, LoginForm, AssignRoleForm, CreateGroupForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordResetConfirmForm, EditProfileForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Prefetch
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView
-from django.views.generic import TemplateView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetConfirmView
+from django.views.generic import TemplateView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your views here.
 def is_admin(user):
@@ -57,7 +60,7 @@ def sign_out(request):
 
 # CBV for Custom Login View
 class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('sign-in')
+    next_page = reverse_lazy('home')
 
 def activate_user(request, user_id, token):
     try:
@@ -130,11 +133,26 @@ class ProfileView(TemplateView):
         context['username'] = user.username
         context['email'] = user.email
         context['name'] = user.get_full_name()
+        context['profile_bio'] = user.profile_bio
+        context['profile_image'] = user.profile_image
         context['member_since'] = user.date_joined
         context['last_login'] = user.last_login
 
         return context
 
+class EditProfileView(UpdateView):
+    model = User
+    form_class = EditProfileForm
+    template_name = 'accounts/edit_profile.html'
+    context_object_name = 'form'
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('profile')
+        
 # CBV for Custom Change/Done/Reset Password
 class CustomChangePassword(PasswordChangeView):
     template_name = 'accounts/change_password.html'
