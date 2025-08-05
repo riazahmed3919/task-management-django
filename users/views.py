@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import login, logout
@@ -7,9 +7,11 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Prefetch
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetConfirmView
-from django.views.generic import TemplateView, UpdateView
+from django.views.generic import TemplateView, UpdateView, ListView
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
+from django.views import View
+from django.utils.decorators import method_decorator
 
 User = get_user_model()
 
@@ -104,6 +106,31 @@ def assign_role(request, user_id):
         
     return render(request, 'admin/assign_role.html', {'form': form})
 
+# CBV for Assign Role
+assign_role_decorator = [login_required, user_passes_test(is_admin, login_url='no-permission')]
+@method_decorator(assign_role_decorator, name='dispatch')
+class CustomAssignRoleView(View):
+    form_class = AssignRoleForm
+    template_name = 'admin/assign_role.html'
+
+    def get(self, request, user_id, *args, **kwargs):
+        user = get_object_or_404(User, id=user_id)
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, user_id, *args, **kwargs):
+        user = get_object_or_404(User, id=user_id)
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            role = form.cleaned_data.get('role')
+            user.groups.clear()
+            user.groups.add(role)
+            messages.success(request, f"User {user.username} has been assigned to the role {role.name}")
+            return redirect('admin-dashboard')
+        
+        return render(request, self.template_name, {'form': form})
+
 @user_passes_test(is_admin, login_url='no-permission')
 def create_group(request):
     form = CreateGroupForm()
@@ -117,10 +144,36 @@ def create_group(request):
         
     return render(request, 'admin/create_group.html', {'form': form})
 
+# CBV for Create Group
+create_group_decorator = [login_required, user_passes_test(is_admin, login_url='no-permission')]
+@method_decorator(create_group_decorator, name='dispatch')
+class CustomCreateGroupView(View):
+    def get(self, request):
+        form = CreateGroupForm
+        return render(request, 'admin/create_group.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = CreateGroupForm(request.POST)
+        
+        if form.is_valid():
+            group = form.save()
+            messages.success(request, f"Group {group.name} has been created successfully.")
+            return redirect('create-group')
+        
+        return render(request, 'admin/create_group.html', {'form': form})
+
 @user_passes_test(is_admin, login_url='no-permission')
 def group_list(request):
     groups = Group.objects.prefetch_related('permissions').all()
     return render(request, 'admin/group_list.html', {'groups': groups})
+
+# CBV for Group List
+class CustomGroupListView(ListView):
+    model = Group
+    template_name = 'admin/group_list.html'
+
+    def get_queryset(self):
+        return Group.objects.prefetch_related('permissions').all()
 
 # CBV for Profile
 class ProfileView(TemplateView):
