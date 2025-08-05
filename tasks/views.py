@@ -9,22 +9,18 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.base import ContextMixin
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, TemplateView
+from django.urls import reverse_lazy
 
 # Create your views here.
 def is_manager(user):
     return user.groups.filter(name='Manager').exists()
 
-def is_employe(user):
+def is_employee(user):
     return user.groups.filter(name='Employee').exists()
 
 @user_passes_test(is_manager, login_url='no-permission')
 def manager_dashboard(request):
-    # total_task = tasks.count()
-    # completed_task = Task.objects.filter(status='COMPLETED').count()
-    # in_progress_task = Task.objects.filter(status='IN_PROGRESS').count()
-    # pending_task = Task.objects.filter(status='PENDING').count()
-
     type = request.GET.get('type', 'all')
 
     # getting task count
@@ -54,9 +50,55 @@ def manager_dashboard(request):
     }
     return render(request, "dashboard/manager_dashboard.html", context)
 
-@user_passes_test(is_employe, login_url='no-permission')
+# CBV for Manager Dashboard
+manager_dashboard_decorator = [login_required, user_passes_test(is_manager, login_url='no-permission')]
+@method_decorator(manager_dashboard_decorator, name='dispatch')
+class ManagerDashboard(TemplateView):
+    template_name = 'dashboard/manager_dashboard.html'
+
+    def retrieve_task_data(self, type):
+        base_query = Task.objects.select_related('details').prefetch_related('assigned_to')
+
+        if type == 'all':
+            return base_query.all()
+        elif type == 'completed':
+            return base_query.filter(status='COMPLETED')
+        elif type == 'in-progress':
+            return base_query.filter(status='IN_PROGRESS')
+        elif type == 'pending':
+            return base_query.filter(status='PENDING')
+            
+    def get_task_counts(self):
+        counts = Task.objects.aggregate(
+            total=Count('id'),
+            completed=Count('id', filter=Q(status='COMPLETED')),
+            in_progress=Count('id', filter=Q(status='IN_PROGRESS')),
+            pending=Count('id', filter=Q(status='PENDING'))
+        )
+        return counts
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_type = self.request.GET.get('type', 'all')
+
+        context['tasks'] = self.retrieve_task_data(task_type)
+        context['counts'] = self.get_task_counts()
+        context['role'] = 'manager'
+        context['type'] = task_type
+        return context
+
+@user_passes_test(is_employee, login_url='no-permission')
 def employee_dashboard(request):
     return render(request, "dashboard/user_dashboard.html")
+
+# CBV for Employee Dashboard
+employee_dashboard_decorator = [login_required, user_passes_test(is_employee, login_url='no-permission')]
+@method_decorator(employee_dashboard_decorator, name='dispatch')
+class EmployeeDashboard(View):
+    template_name = 'dashboard/user_dashboard.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 @login_required
 @permission_required('tasks.add_task', login_url='no-permission')
@@ -188,6 +230,23 @@ def delete_task(request, id):
     else:
         messages.error(request, 'Something went wrong!')
         return redirect('manager-dashboard')
+    
+# CBV for Delete Task
+delete_task_decorator = [login_required, permission_required('tasks.delete_task', login_url='no-permission')]
+@method_decorator(delete_task_decorator, name='dispatch')
+class DeleteTask(DeleteView):
+    model = Task
+    pk_url_kwarg = 'id'
+    success_url = reverse_lazy('manager-dashboard')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        messages.success(request, f"Task '{self.object}' Deleted Successfully!")
+        return self.delete(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        messages.error(request, "Direct access not allowed")
+        return redirect('manager-dashboard')
 
 @login_required
 @permission_required('tasks.view_task', login_url='no-permission')
@@ -208,6 +267,7 @@ class ViewProject(ListView):
         queryset = Project.objects.annotate(
             num_task=Count('task')).order_by('num_task')
         return queryset
+
 
 @login_required
 @permission_required('tasks.view_task', login_url='no-permission')
@@ -248,7 +308,7 @@ class TaskDetails(DetailView):
 def dashboard(request):
     if is_manager(request.user):
         return redirect('manager-dashboard')
-    elif is_employe(request.user):
+    elif is_employee(request.user):
         return redirect('employee-dashboard')
     elif is_admin(request.user):
         return redirect('admin-dashboard')
