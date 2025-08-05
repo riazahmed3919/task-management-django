@@ -111,7 +111,7 @@ class CreateTask(ContextMixin, LoginRequiredMixin, PermissionRequiredMixin, View
 
             messages.success(request, 'Task Created Successfully.')
             context = self.get_context_data(task_form=task_form, task_details_form=task_details_form)
-            return render(request, 'create_task.html', context)
+            return render(request, 'task_form.html', context)
 
 @login_required
 @permission_required('tasks.change_task', login_url='no-permission')
